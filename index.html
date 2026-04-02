@@ -182,7 +182,7 @@
         "🏆 Đàm Vĩnh Hưng said that they were already grown up and should go to school to become successful and be able to make a living.",
     ];
 
-    let heroHP = 100, heroAP = 0, bossHP = 500, score = 0, currentType = '';
+    let heroHP = 100, heroAP = 0, TrueBossHp = 500, bossHP = 500, score = 0, currentType = '';
     const MAX_AP = 20;
 
     function updateLog(msg, color = 'var(--success)') {
@@ -272,7 +272,7 @@
     function refreshUI() {
         document.getElementById('hp-hero').style.width = heroHP + '%';
         document.getElementById('ap-hero').style.width = (heroAP / MAX_AP * 100) + '%';
-        document.getElementById('hp-boss').style.width = bossHP + '%';
+        document.getElementById('hp-boss').style.width = (bossHP/TrueBossHp)*100 + '%';
         document.getElementById('hp-text').innerText = `${heroHP}/100`;
         document.getElementById('ap-text').innerText = heroAP;
         document.getElementById('score').innerText = score;
