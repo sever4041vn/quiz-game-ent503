@@ -89,13 +89,13 @@
             <div style="font-size: 0.85rem; color: var(--armor); font-weight: bold;">ARMOR: <span id="ap-text">0</span>/20</div>
         </div>
         <div class="entity" style="text-align: right;">
-            <div style="font-weight: bold; margin-bottom: 8px;">BOSS TOPIC</div>
+            <div style="font-weight: bold; margin-bottom: 8px;">BOSS</div>
             <div class="bar-bg"><div id="hp-boss" class="bar-fill"></div></div>
             <div style="color: var(--warning); font-weight: bold; font-size: 1.1rem;">SCORE: <span id="score">0</span></div>
         </div>
     </div>
 
-    <div id="log">> Sẵn sàng chưa? Hãy chọn kỹ năng để bắt đầu trận đấu!</div>
+    <div id="log">> Are you ready? Choose a ability to start the game!</div>
 
     <div id="action-panel">
         <div id="menu-main" class="menu-grid">
@@ -125,86 +125,49 @@
 
 <script>
     // BỘ CÂU HỎI GỐC (Dùng để reset khi hết câu hỏi)
-// BỘ CÂU HỎI ĐÃ ĐƯỢC PHÂN LOẠI THEO 3 KỸ NĂNG
+    // BỘ CÂU HỎI TỔNG HỢP (10 ATTACK - 10 SHIELD - 10 HEAL)
     const ORIGINAL_QUESTIONS = {
         attack: [
-            { 
-                q: "When Uchimura _____ the stadium, the gymnastics event _____.", 
-                opts: ["entered / began", "enters / begins", "entering / begun", "entered / had begun"], 
-                a: "entered / began" 
-            },
-            { 
-                q: "Lila Downs _____ while I _____ for my seat.", 
-                opts: ["sang / looked", "was already singing / was looking", "has sung / am looking", "sings / looks"], 
-                a: "was already singing / was looking" 
-            },
-            { 
-                q: "Before Uchimura _____ in the 2012 Olympics, he _____ several world championships.", 
-                opts: ["competes / wins", "competed / had won", "competed / won", "had competed / won"], 
-                a: "competed / had won" 
-            },
-            { 
-                q: "He _____ here at 10:00 and _____ this message.", 
-                opts: ["is / leaves", "was / left", "has been / left", "was / leaves"], 
-                a: "was / left" 
-            },
-            { 
-                q: "They _____ a decision when we called.", 
-                opts: ["already made", "have already made", "had already made", "were already making"], 
-                a: "had already made" 
-            },
-            { 
-                q: "Have you _____ at the program requirements lately?", 
-                opts: ["look", "looking", "looked", "been looking"], 
-                a: "looked" 
-            },
-            { 
-                q: "Right now she _____ a meeting.", 
-                opts: ["has", "is having", "had", "has been having"], 
-                a: "is having" 
-            }
+            // Vocabulary: Career & Goals
+            { q: "She decided to _____ a career in medicine.", opts: ["take up", "decide on", "apply for", "sign up for"], a: "decide on" },
+            { q: "He wants to _____ a position at a big company.", opts: ["enroll in", "switch to", "apply for", "take up"], a: "apply for" },
+            { q: "After high school, she will _____ a university program.", opts: ["reject", "enroll in", "switch", "share"], a: "enroll in" },
+            { q: "She was _____ by the school because her grades were too low.", opts: ["accepted", "enrolled", "rejected", "signed"], a: "rejected" },
+            { q: "He decided to _____ from engineering to graphic design.", opts: ["apply", "switch", "enroll", "accept"], a: "switch" },
+            { q: "I want to _____ a course to improve my English skills.", opts: ["sign up for", "decide on", "reject", "apply for"], a: "sign up for" },
+            // Grammar: Tenses
+            { q: "When Uchimura _____ the stadium, the gymnastics event _____.", opts: ["enters / begins", "entered / began", "entering / begun", "entered / had begun"], a: "entered / began" },
+            { q: "Before Uchimura _____ in 2012, he _____ world championships.", opts: ["competed / wins", "competed / had won", "competed / won", "had competed / won"], a: "competed / had won" },
+            { q: "They _____ a decision when we called.", opts: ["already made", "have already made", "had already made", "were already making"], a: "had already made" },
+            { q: "Right now she _____ a meeting.", opts: ["has", "is having", "had", "has been having"], a: "is having" }
         ],
         shield: [
-            { 
-                q: "By the time she moved to Mexico, she studied in the U.S. in the years before. (Is this correct?)", 
-                opts: ["Đúng", "Sai"], 
-                a: "Sai" 
-            },
-            { 
-                q: "'She has applied for the position last week' is a correct sentence.", 
-                opts: ["Đúng", "Sai"], 
-                a: "Sai" 
-            },
-            { 
-                q: "'I’ve been knowing him for ten years' is a correct sentence.", 
-                opts: ["Đúng", "Sai"], 
-                a: "Sai" 
-            },
-            { 
-                q: "'She has been understanding the lesson' is grammatically correct for stative verbs.", 
-                opts: ["Đúng", "Sai"], 
-                a: "Sai" 
-            },
-            { 
-                q: "Stative verbs like 'think' (opinion) are usually not used in continuous forms.", 
-                opts: ["Đúng", "Sai"], 
-                a: "Đúng" 
-            },
-            { 
-                q: "She _____ (have) two children. The answer is 'has'.", 
-                opts: ["Đúng", "Sai"], 
-                a: "Đúng" 
-            }
+            // Grammar: Correct/Incorrect
+            { q: "'By the time she moved, she studied in the U.S. before.' (Is this correct?)", opts: ["Đúng", "Sai"], a: "Sai" },
+            { q: "'She applied for the position last week.' (Is this correct?)", opts: ["Đúng", "Sai"], a: "Đúng" },
+            { q: "'I’ve been knowing him for ten years.' (Is this correct?)", opts: ["Đúng", "Sai"], a: "Sai" },
+            { q: "'She has been understanding the lesson perfectly lately.' (Is this correct?)", opts: ["Đúng", "Sai"], a: "Sai" },
+            { q: "Stative verbs like 'have' (possession) are usually not used in continuous forms.", opts: ["Đúng", "Sai"], a: "Đúng" },
+            // Meaning & Vocabulary
+            { q: "Does 'to put off' mean 'to delay something until later'?", opts: ["Đúng", "Sai"], a: "Đúng" },
+            { q: "Is 'achievable' a synonym for 'impossible'?", opts: ["Đúng", "Sai"], a: "Sai" },
+            { q: "A 'modest' goal is one that is very extreme and ambitious.", opts: ["Đúng", "Sai"], a: "Sai" },
+            { q: "“to officially join a school” means 'to enroll in'.", opts: ["Đúng", "Sai"], a: "Đúng" },
+            { q: "“to try to get a job” means 'to apply for'.", opts: ["Đúng", "Sai"], a: "Đúng" }
         ],
         heal: [
-            { q: "By the time Downs moved, she _____ (perform) for several years. (Past Perfect Cont.)", a: "had been performing" },
+            // Tense Completion
+            { q: "Lila Downs _____ (already/sing) while I was looking for my seat.", a: "was already singing" },
+            { q: "By the time Downs moved, she _____ (perform) for several years.", a: "had been performing" },
             { q: "Steven _____ (always/talk) in class when he was a student.", a: "was always talking" },
-            { q: "She _____ (already/inform) her manager about the problem. (Present Perfect)", a: "has already informed" },
-            { q: "We _____ (work) for two hours when the storm began. (Past Perfect Cont.)", a: "had been working" },
-            { q: "She _____ (just/accept) into a top-notch business school. (Passive Voice)", a: "has just been accepted" },
+            { q: "She _____ (already/inform) her manager about the problem.", a: "has already informed" },
+            { q: "We _____ (work) for two hours when the storm began.", a: "had been working" },
+            { q: "She _____ (just/accept) into a top-notch business school.", a: "has just been accepted" },
             { q: "We _____ (fill) out a lot of applications recently.", a: "have been filling" },
-            { q: "_____ you _____ (ever/consider) applying to graduate school?", a: "Have / ever considered" },
-            { q: "I _____ (think) these laws are unfair. (Stative verb)", a: "think" }
+            // Vocabulary & Stative
+            { q: "He works hard to _____ (hoàn thành) his goals.", a: "fulfill" },
+            { q: "I _____ (think) these laws are unfair. (Opinion)", a: "think" },
+            { q: "She _____ (have) two children. (Possession)", a: "has" }
         ]
     };
 
@@ -212,13 +175,14 @@
     let currentQuestions = JSON.parse(JSON.stringify(ORIGINAL_QUESTIONS));
 
     const wishes = [
-        "🌟 Chúc bạn có một buổi thuyết trình thành công rực rỡ!",
-        "🚀 Chúc bạn nhận được đánh giá cao nhất từ khán giả!",
-        "💎 Sự tự tin của bạn hôm nay chính là chìa khóa thành công!",
-        "🏆 Chúc bạn sớm trở thành một chuyên gia thực thụ!"
+        "🌟 Have a good day!",
+        "🚀 I wish you could score 10 on the FE!",
+        "💎 Hello there Vu. Finally you can find Vu!",
+        "🏆 I wish you could have a date with your crush.!",
+        "🏆 Đàm Vĩnh Hưng said that they were already grown up and should go to school to become successful and be able to make a living.",
     ];
 
-    let heroHP = 100, heroAP = 0, bossHP = 100, score = 0, currentType = '';
+    let heroHP = 100, heroAP = 0, bossHP = 500, score = 0, currentType = '';
     const MAX_AP = 20;
 
     function updateLog(msg, color = 'var(--success)') {
@@ -273,13 +237,13 @@
         if(isRight) {
             if(currentType === 'attack') {
                 bossHP -= 25; score += 100;
-                updateLog("CHÍNH XÁC! Boss bị trúng đòn nặng (-25 Máu).");
+                updateLog("CORRECT! The boss took a damage. (-25 Boss's heal).");
             } else if(currentType === 'shield') {
                 heroAP = MAX_AP; score += 50;
-                updateLog("GIÁP KÍCH HOẠT! Bạn nhận được 20 AP bảo vệ.");
+                updateLog("EXECUTING SHIELD! You earned 20 AP shield.");
             } else {
                 heroHP = Math.min(100, heroHP + 20); score += 80;
-                updateLog("HỒI PHỤC THÀNH CÔNG! Bạn hồi được 20 Máu.");
+                updateLog("HEALING SUCCESSFULLY! You earned 20 blood.");
             }
         } else {
             // PHẢN CÔNG: Ưu tiên trừ vào Giáp (Armor)
@@ -290,16 +254,16 @@
             if(heroAP > 0) {
                 if(heroAP >= damage) {
                     heroAP -= damage;
-                    updateLog(`SAI RỒI! Giáp đã hấp thụ toàn bộ sát thương.`, 'var(--warning)');
+                    updateLog(`WRONG! The shield absorbed all the damage.`, 'var(--warning)');
                 } else {
                     let remain = damage - heroAP;
                     heroAP = 0;
                     heroHP -= remain;
-                    updateLog(`SAI RỒI! Giáp vỡ, bạn nhận thêm ${remain} sát thương.`, 'var(--primary)');
+                    updateLog(`WRONG! Shield was broken, you took ${remain} damage.`, 'var(--primary)');
                 }
             } else {
                 heroHP -= damage;
-                updateLog(`SAI RỒI! Bạn mất ${damage} máu trực tiếp.`, 'var(--primary)');
+                updateLog(`WRONG! You took ${damage} damage.`, 'var(--primary)');
             }
         }
         refreshUI();
