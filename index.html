@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Quiz - No Repeat System</title>
+    <style>
+        :root {
+            --primary: #ff4757;
+            --secondary: #2e86de;
+            --success: #2ed573;
+            --warning: #ffa502;
+            --armor: #00d2d3;
+            --dark: #2f3542;
+        }
+
+        body {
+            margin: 0; background: #1e272e; font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; color: white; overflow: hidden;
+        }
+
+        #game-container {
+            width: 850px; background: #34495e; border: 5px solid #ecf0f1;
+            padding: 30px; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+        }
+
+        .battle-header { display: flex; justify-content: space-between; margin-bottom: 25px; }
+        .entity { width: 45%; }
+        .bar-bg { height: 22px; background: #2c3e50; border: 2px solid #fff; border-radius: 6px; margin-bottom: 6px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 100%; transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        #hp-hero { background: var(--success); }
+        #ap-hero { background: var(--armor); }
+        #hp-boss { background: var(--primary); }
+
+        #log {
+            background: #000; padding: 15px; height: 50px; border-radius: 8px;
+            margin-bottom: 25px; color: var(--success); font-family: 'Courier New', monospace;
+            display: flex; align-items: center; border-left: 5px solid var(--success);
+            font-size: 1rem;
+        }
+
+        #action-panel {
+            background: var(--dark); padding: 30px; border-radius: 15px; min-height: 280px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .btn-action {
+            padding: 25px 15px; border: none; border-radius: 12px; color: white;
+            font-weight: bold; cursor: pointer; transition: 0.3s; text-align: center;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+        .btn-action:hover { transform: translateY(-5px); filter: brightness(1.1); box-shadow: 0 8px 0 rgba(0,0,0,0.2); }
+        .btn-attack { background: var(--primary); }
+        .btn-shield { background: var(--secondary); }
+        .btn-heal { background: var(--success); }
+
+        .question-text { font-size: 1.5rem; margin-bottom: 25px; text-align: center; color: var(--warning); }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .opt-btn {
+            padding: 18px; border: 2px solid #fff; background: rgba(255,255,255,0.05);
+            color: white; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 1rem;
+        }
+        .opt-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
+        
+        input[type="text"] {
+            width: 100%; padding: 18px; box-sizing: border-box; border-radius: 10px;
+            border: none; font-size: 1.3rem; text-align: center; outline: none;
+        }
+
+        .wish-card { background: white; color: #2c3e50; padding: 25px; border-radius: 12px; margin: 20px 0; border-left: 10px solid var(--warning); font-size: 1.2rem; }
+        .shake { animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% { transform: translate(0); } 25% { transform: translate(-10px); } 75% { transform: translate(10px); } }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="battle-header">
+        <div class="entity">
+            <div style="font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between;">
+                <span>HERO</span> <span id="hp-text">100/100</span>
+            </div>
+            <div class="bar-bg"><div id="hp-hero" class="bar-fill"></div></div>
+            <div class="bar-bg" style="height: 12px;"><div id="ap-hero" class="bar-fill" style="width: 0%"></div></div>
+            <div style="font-size: 0.85rem; color: var(--armor); font-weight: bold;">ARMOR: <span id="ap-text">0</span>/20</div>
+        </div>
+        <div class="entity" style="text-align: right;">
+            <div style="font-weight: bold; margin-bottom: 8px;">BOSS TOPIC</div>
+            <div class="bar-bg"><div id="hp-boss" class="bar-fill"></div></div>
+            <div style="color: var(--warning); font-weight: bold; font-size: 1.1rem;">SCORE: <span id="score">0</span></div>
+        </div>
+    </div>
+
+    <div id="log">> Sẵn sàng chưa? Hãy chọn kỹ năng để bắt đầu trận đấu!</div>
+
+    <div id="action-panel">
+        <div id="menu-main" class="menu-grid">
+            <button class="btn-action btn-attack" onclick="startQuiz('attack')">🔥 ATTACK<br><small>Gây sát thương</small></button>
+            <button class="btn-action btn-shield" onclick="startQuiz('shield')">🛡️ SHIELD<br><small>Hồi 20 Giáp</small></button>
+            <button class="btn-action btn-heal" onclick="startQuiz('heal')">💊 HEAL<br><small>Hồi 20 Máu</small></button>
+        </div>
+
+        <div id="quiz-zone" class="hidden">
+            <div class="question-text" id="q-text"></div>
+            <div id="ans-options" class="options-grid"></div>
+            <div id="ans-input-wrapper" class="hidden">
+                <input type="text" id="ans-input" placeholder="Nhập đáp án và nhấn Enter...">
+            </div>
+        </div>
+
+        <div id="final-screen" class="hidden" style="text-align: center;">
+            <h1 id="final-title" style="font-size: 3rem; margin: 0;"></h1>
+            <div id="wish-container" class="wish-card hidden">
+                <p id="wish-text"></p>
+            </div>
+            <p style="font-size: 1.2rem;">Tổng điểm đạt được: <span id="final-score" style="color: var(--warning); font-size: 2rem; font-weight: bold;">0</span></p>
+            <button class="btn-action btn-shield" style="width: 250px" onclick="location.reload()">CHƠI LẠI TRẬN MỚI</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // BỘ CÂU HỎI GỐC (Dùng để reset khi hết câu hỏi)
+// BỘ CÂU HỎI ĐÃ ĐƯỢC PHÂN LOẠI THEO 3 KỸ NĂNG
+    const ORIGINAL_QUESTIONS = {
+        attack: [
+            { 
+                q: "When Uchimura _____ the stadium, the gymnastics event _____.", 
+                opts: ["entered / began", "enters / begins", "entering / begun", "entered / had begun"], 
+                a: "entered / began" 
+            },
+            { 
+                q: "Lila Downs _____ while I _____ for my seat.", 
+                opts: ["sang / looked", "was already singing / was looking", "has sung / am looking", "sings / looks"], 
+                a: "was already singing / was looking" 
+            },
+            { 
+                q: "Before Uchimura _____ in the 2012 Olympics, he _____ several world championships.", 
+                opts: ["competes / wins", "competed / had won", "competed / won", "had competed / won"], 
+                a: "competed / had won" 
+            },
+            { 
+                q: "He _____ here at 10:00 and _____ this message.", 
+                opts: ["is / leaves", "was / left", "has been / left", "was / leaves"], 
+                a: "was / left" 
+            },
+            { 
+                q: "They _____ a decision when we called.", 
+                opts: ["already made", "have already made", "had already made", "were already making"], 
+                a: "had already made" 
+            },
+            { 
+                q: "Have you _____ at the program requirements lately?", 
+                opts: ["look", "looking", "looked", "been looking"], 
+                a: "looked" 
+            },
+            { 
+                q: "Right now she _____ a meeting.", 
+                opts: ["has", "is having", "had", "has been having"], 
+                a: "is having" 
+            }
+        ],
+        shield: [
+            { 
+                q: "By the time she moved to Mexico, she studied in the U.S. in the years before. (Is this correct?)", 
+                opts: ["Đúng", "Sai"], 
+                a: "Sai" 
+            },
+            { 
+                q: "'She has applied for the position last week' is a correct sentence.", 
+                opts: ["Đúng", "Sai"], 
+                a: "Sai" 
+            },
+            { 
+                q: "'I’ve been knowing him for ten years' is a correct sentence.", 
+                opts: ["Đúng", "Sai"], 
+                a: "Sai" 
+            },
+            { 
+                q: "'She has been understanding the lesson' is grammatically correct for stative verbs.", 
+                opts: ["Đúng", "Sai"], 
+                a: "Sai" 
+            },
+            { 
+                q: "Stative verbs like 'think' (opinion) are usually not used in continuous forms.", 
+                opts: ["Đúng", "Sai"], 
+                a: "Đúng" 
+            },
+            { 
+                q: "She _____ (have) two children. The answer is 'has'.", 
+                opts: ["Đúng", "Sai"], 
+                a: "Đúng" 
+            }
+        ],
+        heal: [
+            { q: "By the time Downs moved, she _____ (perform) for several years. (Past Perfect Cont.)", a: "had been performing" },
+            { q: "Steven _____ (always/talk) in class when he was a student.", a: "was always talking" },
+            { q: "She _____ (already/inform) her manager about the problem. (Present Perfect)", a: "has already informed" },
+            { q: "We _____ (work) for two hours when the storm began. (Past Perfect Cont.)", a: "had been working" },
+            { q: "She _____ (just/accept) into a top-notch business school. (Passive Voice)", a: "has just been accepted" },
+            { q: "We _____ (fill) out a lot of applications recently.", a: "have been filling" },
+            { q: "_____ you _____ (ever/consider) applying to graduate school?", a: "Have / ever considered" },
+            { q: "I _____ (think) these laws are unfair. (Stative verb)", a: "think" }
+        ]
+    };
+
+    // BỘ CÂU HỎI HIỆN TẠI (Sẽ bị xóa dần khi chơi)
+    let currentQuestions = JSON.parse(JSON.stringify(ORIGINAL_QUESTIONS));
+
+    const wishes = [
+        "🌟 Chúc bạn có một buổi thuyết trình thành công rực rỡ!",
+        "🚀 Chúc bạn nhận được đánh giá cao nhất từ khán giả!",
+        "💎 Sự tự tin của bạn hôm nay chính là chìa khóa thành công!",
+        "🏆 Chúc bạn sớm trở thành một chuyên gia thực thụ!"
+    ];
+
+    let heroHP = 100, heroAP = 0, bossHP = 100, score = 0, currentType = '';
+    const MAX_AP = 20;
+
+    function updateLog(msg, color = 'var(--success)') {
+        const log = document.getElementById('log');
+        log.innerText = `> ${msg}`;
+        log.style.color = color;
+    }
+
+    function startQuiz(type) {
+        currentType = type;
+        
+        // KIỂM TRA NẾU HẾT CÂU HỎI TRONG DANH MỤC THÌ RESET
+        if (currentQuestions[type].length === 0) {
+            updateLog(`Đã dùng hết câu hỏi ${type.toUpperCase()}, đang làm mới danh sách...`, 'var(--warning)');
+            currentQuestions[type] = JSON.parse(JSON.stringify(ORIGINAL_QUESTIONS[type]));
+        }
+
+        // CHỌN NGẪU NHIÊN VÀ XÓA LUÔN CÂU ĐÓ
+        const randomIndex = Math.floor(Math.random() * currentQuestions[type].length);
+        const qData = currentQuestions[type].splice(randomIndex, 1)[0];
+
+        document.getElementById('menu-main').classList.add('hidden');
+        document.getElementById('quiz-zone').classList.remove('hidden');
+        document.getElementById('q-text').innerText = qData.q;
+
+        const optZone = document.getElementById('ans-options');
+        const inputWrapper = document.getElementById('ans-input-wrapper');
+        optZone.innerHTML = '';
+        inputWrapper.classList.add('hidden');
+
+        if(type === 'heal') {
+            inputWrapper.classList.remove('hidden');
+            const inp = document.getElementById('ans-input');
+            inp.value = ''; inp.focus();
+            inp.onkeypress = (e) => { if(e.key === 'Enter') checkAns(inp.value, qData.a); };
+        } else {
+            qData.opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAns(opt, qData.a);
+                optZone.appendChild(btn);
+            });
+        }
+    }
+
+    function checkAns(userInp, correctInp) {
+        const isRight = userInp.toLowerCase().trim() === correctInp.toLowerCase();
+        document.getElementById('quiz-zone').classList.add('hidden');
+        document.getElementById('menu-main').classList.remove('hidden');
+
+        if(isRight) {
+            if(currentType === 'attack') {
+                bossHP -= 25; score += 100;
+                updateLog("CHÍNH XÁC! Boss bị trúng đòn nặng (-25 Máu).");
+            } else if(currentType === 'shield') {
+                heroAP = MAX_AP; score += 50;
+                updateLog("GIÁP KÍCH HOẠT! Bạn nhận được 20 AP bảo vệ.");
+            } else {
+                heroHP = Math.min(100, heroHP + 20); score += 80;
+                updateLog("HỒI PHỤC THÀNH CÔNG! Bạn hồi được 20 Máu.");
+            }
+        } else {
+            // PHẢN CÔNG: Ưu tiên trừ vào Giáp (Armor)
+            let damage = 25;
+            document.getElementById('game-container').classList.add('shake');
+            setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 400);
+
+            if(heroAP > 0) {
+                if(heroAP >= damage) {
+                    heroAP -= damage;
+                    updateLog(`SAI RỒI! Giáp đã hấp thụ toàn bộ sát thương.`, 'var(--warning)');
+                } else {
+                    let remain = damage - heroAP;
+                    heroAP = 0;
+                    heroHP -= remain;
+                    updateLog(`SAI RỒI! Giáp vỡ, bạn nhận thêm ${remain} sát thương.`, 'var(--primary)');
+                }
+            } else {
+                heroHP -= damage;
+                updateLog(`SAI RỒI! Bạn mất ${damage} máu trực tiếp.`, 'var(--primary)');
+            }
+        }
+        refreshUI();
+    }
+
+    function refreshUI() {
+        document.getElementById('hp-hero').style.width = heroHP + '%';
+        document.getElementById('ap-hero').style.width = (heroAP / MAX_AP * 100) + '%';
+        document.getElementById('hp-boss').style.width = bossHP + '%';
+        document.getElementById('hp-text').innerText = `${heroHP}/100`;
+        document.getElementById('ap-text').innerText = heroAP;
+        document.getElementById('score').innerText = score;
+
+        if(bossHP <= 0) endGame(true);
+        else if(heroHP <= 0) endGame(false);
+    }
+
+    function endGame(isWin) {
+        document.getElementById('menu-main').classList.add('hidden');
+        document.getElementById('log').classList.add('hidden');
+        document.getElementById('final-screen').classList.remove('hidden');
+        document.getElementById('final-score').innerText = score;
+
+        const title = document.getElementById('final-title');
+        if(isWin) {
+            title.innerText = "VICTORY!";
+            title.style.color = "var(--success)";
+            document.getElementById('wish-container').classList.remove('hidden');
+            document.getElementById('wish-text').innerText = wishes[Math.floor(Math.random() * wishes.length)];
+        } else {
+            title.innerText = "GAME OVER";
+            title.style.color = "var(--primary)";
+        }
+    }
+</script>
+</body>
+</html>
