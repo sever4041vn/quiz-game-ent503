@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG Quiz - No Repeat System</title>
+    <title>RPG Quiz - English Version</title>
     <style>
         :root {
             --primary: #ff4757;
@@ -95,20 +95,20 @@
         </div>
     </div>
 
-    <div id="log">> Are you ready? Choose a ability to start the game!</div>
+    <div id="log">> Are you ready? Choose an ability to start the battle!</div>
 
     <div id="action-panel">
         <div id="menu-main" class="menu-grid">
-            <button class="btn-action btn-attack" onclick="startQuiz('attack')">🔥 ATTACK<br><small>Deal damage</small></button>
-            <button class="btn-action btn-shield" onclick="startQuiz('shield')">🛡️ SHIELD<br><small>Restore 20 shield</small></button>
-            <button class="btn-action btn-heal" onclick="startQuiz('heal')">💊 HEAL<br><small>Restore 20 health</small></button>
+            <button class="btn-action btn-attack" onclick="startQuiz('attack')">🔥 ATTACK<br><small>Deal Damage</small></button>
+            <button class="btn-action btn-shield" onclick="startQuiz('shield')">🛡️ SHIELD<br><small>Restore 20 Armor</small></button>
+            <button class="btn-action btn-heal" onclick="startQuiz('heal')">💊 HEAL<br><small>Restore 20 Health</small></button>
         </div>
 
         <div id="quiz-zone" class="hidden">
             <div class="question-text" id="q-text"></div>
             <div id="ans-options" class="options-grid"></div>
             <div id="ans-input-wrapper" class="hidden">
-                <input type="text" id="ans-input" placeholder="Typing the answer and enter. If there are two gap use slash bettwen two answer">
+                <input type="text" id="ans-input" placeholder="Type answer and press Enter. Use / for multiple gaps.">
             </div>
         </div>
 
@@ -117,38 +117,32 @@
             <div id="wish-container" class="wish-card hidden">
                 <p id="wish-text"></p>
             </div>
-            <p style="font-size: 1.2rem;">Tổng điểm đạt được: <span id="final-score" style="color: var(--warning); font-size: 2rem; font-weight: bold;">0</span></p>
-            <button class="btn-action btn-shield" style="width: 250px" onclick="location.reload()">CHƠI LẠI TRẬN MỚI</button>
+            <p style="font-size: 1.2rem;">Total Score Achieved: <span id="final-score" style="color: var(--warning); font-size: 2rem; font-weight: bold;">0</span></p>
+            <button class="btn-action btn-shield" style="width: 250px" onclick="location.reload()">PLAY AGAIN</button>
         </div>
     </div>
 </div>
 
 <script>
-    // BỘ CÂU HỎI GỐC (Dùng để reset khi hết câu hỏi)
-    // BỘ CÂU HỎI TỔNG HỢP (10 ATTACK - 10 SHIELD - 10 HEAL)
     const ORIGINAL_QUESTIONS = {
         attack: [
-            // Vocabulary: Career & Goals
             { q: "She decided to _____ a career in medicine.", opts: ["take up", "decide on", "apply for", "sign up for"], a: "decide on" },
             { q: "He wants to _____ a position at a big company.", opts: ["enroll in", "switch to", "apply for", "take up"], a: "apply for" },
             { q: "After high school, she will _____ a university program.", opts: ["reject", "enroll in", "switch", "share"], a: "enroll in" },
             { q: "She was _____ by the school because her grades were too low.", opts: ["accepted", "enrolled", "rejected", "signed"], a: "rejected" },
             { q: "He decided to _____ from engineering to graphic design.", opts: ["apply", "switch", "enroll", "accept"], a: "switch" },
             { q: "I want to _____ a course to improve my English skills.", opts: ["sign up for", "decide on", "reject", "apply for"], a: "sign up for" },
-            // Grammar: Tenses
             { q: "When Uchimura _____ the stadium, the gymnastics event _____.", opts: ["enters / begins", "entered / began", "entering / begun", "entered / had begun"], a: "entered / began" },
             { q: "Before Uchimura _____ in 2012, he _____ world championships.", opts: ["competed / wins", "competed / had won", "competed / won", "had competed / won"], a: "competed / had won" },
             { q: "They _____ a decision when we called.", opts: ["already made", "have already made", "had already made", "were already making"], a: "had already made" },
             { q: "Right now she _____ a meeting.", opts: ["has", "is having", "had", "has been having"], a: "is having" }
         ],
         shield: [
-            // Grammar: Correct/Incorrect
             { q: "'By the time she moved, she studied in the U.S. before.' (Is this correct?)", opts: ["True", "False"], a: "False" },
             { q: "'She applied for the position last week.' (Is this correct?)", opts: ["True", "False"], a: "True" },
             { q: "'I’ve been knowing him for ten years.' (Is this correct?)", opts: ["True", "False"], a: "False" },
             { q: "'She has been understanding the lesson perfectly lately.' (Is this correct?)", opts: ["True", "False"], a: "False" },
             { q: "Stative verbs like 'have' (possession) are usually not used in continuous forms.", opts: ["True", "False"], a: "True" },
-            // Meaning & Vocabulary
             { q: "Does 'to put off' mean 'to delay something until later'?", opts: ["True", "False"], a: "True" },
             { q: "Is 'achievable' a synonym for 'impossible'?", opts: ["True", "False"], a: "False" },
             { q: "A 'modest' goal is one that is very extreme and ambitious.", opts: ["True", "False"], a: "False" },
@@ -156,7 +150,6 @@
             { q: "“to try to get a job” means 'to apply for'.", opts: ["True", "False"], a: "True" }
         ],
         heal: [
-            // Tense Completion
             { q: "Lila Downs _____ (already/sing) while I was looking for my seat.", a: "was already singing" },
             { q: "By the time Downs moved, she _____ (perform) for several years.", a: "had been performing" },
             { q: "Steven _____ (always/talk) in class when he was a student.", a: "was always talking" },
@@ -164,14 +157,12 @@
             { q: "We _____ (work) for two hours when the storm began.", a: "had been working" },
             { q: "She _____ (just/accept) into a top-notch business school.", a: "has just been accepted" },
             { q: "We _____ (fill) out a lot of applications recently.", a: "have been filling" },
-            // Vocabulary & Stative
-            { q: "He works hard to _____ (hoàn thành) his goals.", a: "fulfill" },
+            { q: "He works hard to _____ (fulfill) his goals.", a: "fulfill" },
             { q: "I _____ (think) these laws are unfair. (Opinion)", a: "think" },
             { q: "She _____ (have) two children. (Possession)", a: "has" }
         ]
     };
 
-    // BỘ CÂU HỎI HIỆN TẠI (Sẽ bị xóa dần khi chơi)
     let currentQuestions = JSON.parse(JSON.stringify(ORIGINAL_QUESTIONS));
 
     const wishes = [
@@ -194,13 +185,11 @@
     function startQuiz(type) {
         currentType = type;
         
-        // KIỂM TRA NẾU HẾT CÂU HỎI TRONG DANH MỤC THÌ RESET
         if (currentQuestions[type].length === 0) {
-            updateLog(`Đã dùng hết câu hỏi ${type.toUpperCase()}, đang làm mới danh sách...`, 'var(--warning)');
+            updateLog(`${type.toUpperCase()} question pool empty. Refreshing list...`, 'var(--warning)');
             currentQuestions[type] = JSON.parse(JSON.stringify(ORIGINAL_QUESTIONS[type]));
         }
 
-        // CHỌN NGẪU NHIÊN VÀ XÓA LUÔN CÂU ĐÓ
         const randomIndex = Math.floor(Math.random() * currentQuestions[type].length);
         const qData = currentQuestions[type].splice(randomIndex, 1)[0];
 
@@ -237,16 +226,15 @@
         if(isRight) {
             if(currentType === 'attack') {
                 bossHP -= 25; score += 100;
-                updateLog("CORRECT! The boss took a damage. (-25 Boss's heal).");
+                updateLog("CORRECT! The boss took damage. (-25 Boss HP)");
             } else if(currentType === 'shield') {
                 heroAP = MAX_AP; score += 50;
-                updateLog("EXECUTING SHIELD! You earned 20 AP shield.");
+                updateLog("SHIELD ACTIVATED! You gained 20 AP.");
             } else {
                 heroHP = Math.min(100, heroHP + 20); score += 80;
-                updateLog("HEALING SUCCESSFULLY! You earned 20 blood.");
+                updateLog("HEAL SUCCESSFUL! You recovered 20 HP.");
             }
         } else {
-            // PHẢN CÔNG: Ưu tiên trừ vào Giáp (Armor)
             let damage = 25;
             document.getElementById('game-container').classList.add('shake');
             setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 400);
@@ -254,16 +242,16 @@
             if(heroAP > 0) {
                 if(heroAP >= damage) {
                     heroAP -= damage;
-                    updateLog(`WRONG! The shield absorbed all the damage.`, 'var(--warning)');
+                    updateLog(`WRONG! Shield absorbed all damage.`, 'var(--warning)');
                 } else {
                     let remain = damage - heroAP;
                     heroAP = 0;
                     heroHP -= remain;
-                    updateLog(`WRONG! Shield was broken, you took ${remain} damage.`, 'var(--primary)');
+                    updateLog(`WRONG! Shield broke, you took ${remain} damage.`, 'var(--primary)');
                 }
             } else {
                 heroHP -= damage;
-                updateLog(`WRONG! You took ${damage} damage.`, 'var(--primary)');
+                updateLog(`WRONG! You took ${damage} direct damage.`, 'var(--primary)');
             }
         }
         refreshUI();
